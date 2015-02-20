@@ -26,10 +26,10 @@ Labels = dir(fullfile('\Audio','*.wav'));
 Noise = dir(fullfile('Audio','Noise.wav'));
 
 % Read in text files for stim lists
-[MacaqueNames] = textread('Macaques.txt','%s'); %#ok<*REMFF1>
-[CapuchinNames] = textread('Capuchins.txt','%s'); %#ok<*REMFF1>
-[LabelNames] = textread('Labels.txt','%s'); %#ok<*REMFF1>
-[NoiseFile] = textread('Noise.txt','%s'); %#ok<*REMFF1>
+[MacaqueNames] = textread('Lists/Macaques.txt','%s'); %#ok<*REMFF1>
+[CapuchinNames] = textread('Lists/Capuchins.txt','%s'); %#ok<*REMFF1>
+[LabelNames] = textread('Lists/Labels.txt','%s'); %#ok<*REMFF1>
+[NoiseFile] = textread('Lists/Noise.txt','%s'); %#ok<*REMFF1>
 
 % Shuffle order of each species and create a randomized list of each
 % species
@@ -329,4 +329,3 @@ Screen('CloseAll');
 
 %PsychPortAudio('Stop',MySoundHandle);
 %PsychPortAudio('Close',MySoundHandle);
-
