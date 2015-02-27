@@ -102,10 +102,11 @@ try
     nTrialsERP = 3; % number of ERP training trials 
     nImagesssVEP = floor(TimessVEP*FreqssVEP); % floor stops presenting at an image instead of half an image or something
 
-    % framesPerStimuli = 1;  % hard-code the number of frames per stimulus ease the amount of computational work OR...
-    framesPerStimuli = floor(fps * (FreqssVEP / nStimuli));  % calculate the exact number of frames per stimulus
+    framesPerStimuli = 20;  % hard-code the number of frames per stimulus ease the amount of computational work OR...
+    % framesPerStimuli = floor(fps * (FreqssVEP / nStimuli));  % calculate the exact number of frames per stimulus
 
-    waitTime = abs((1/framesPerStim) - (1/FreqssVEP));
+    disp('aaaaaa');
+    disp(framesPerStimuli);
 
     for Task=1:nTask
         for Species=1:nSpecies
@@ -162,19 +163,17 @@ try
                                    Screen('DrawTexture',w,mytex,[],destrect,[],[],alphaCount);
                                    [standOn] = Screen('Flip',w);
                                    % WaitSecs((1/(framesPerStimuli * FreqssVEP)));
-                                   WaitSecs(waitTime);
 
                                elseif currentFrame >= (framesPerStimuli / 2)
                                    alphaCount = alphaCount - (2/framesPerStimuli);
                                    Screen('DrawTexture',w,mytex,[],destrect,[],[],alphaCount);
                                    [standOn] = Screen('Flip',w);
                                    % WaitSecs((1/(framesPerStimuli * FreqssVEP)));
-                                   WaitSecs(waitTime);
 
                                end
 
                            end
-                           
+
                        elseif mod(image,5) == 0 % if remainder is divisible by 5, present oddball
                            newoddball = randi(4);
                            while newoddball == oddball || newoddball == standard
@@ -199,14 +198,12 @@ try
                                    Screen('DrawTexture',w,mytex,[],destrect,[],[],alphaCount);
                                    [standOn] = Screen('Flip',w);
                                    % WaitSecs((1/(framesPerStimuli * FreqssVEP)));
-                                   WaitSecs(waitTime);
 
                                elseif currentFrame >= (framesPerStimuli / 2)
                                    alphaCount = alphaCount - (2/framesPerStimuli);
                                    Screen('DrawTexture',w,mytex,[],destrect,[],[],alphaCount);
                                    [standOn] = Screen('Flip',w);
                                    % WaitSecs((1/(framesPerStimuli * FreqssVEP)));
-                                   WaitSecs(waitTime);
 
                                end
 
