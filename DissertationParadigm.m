@@ -21,8 +21,8 @@ try
      counterbalance = str2double(counterbalance);
       
     % Set stimuli directories for each species (to present images)
-    Macaques = dir(fullfile('\Images\Macaques\gray','*.png'));
-    Capuchins = dir(fullfile('\Images\Capuchins\gray','*.png'));
+    Macaques = dir(fullfile('\Images\Macaques\','*.png'));
+    Capuchins = dir(fullfile('\Images\Capuchins\','*.png'));
 
     % Set stimuli directory for audio files
     Labels = dir(fullfile('\Audio','*.wav'));
@@ -102,11 +102,9 @@ try
     nTrialsERP = 3; % number of ERP training trials 
     nImagesssVEP = floor(TimessVEP*FreqssVEP); % floor stops presenting at an image instead of half an image or something
 
-    framesPerStimuli = 20;  % hard-code the number of frames per stimulus ease the amount of computational work OR...
-    % framesPerStimuli = floor(fps * (FreqssVEP / nStimuli));  % calculate the exact number of frames per stimulus
+    nAlpha = 30;  % the amount of different alpha values to be presented per stimuli; currently set (sort of arbitrarily to 30)
+    framesPerStimuli = floor(1 / (FreqssVEP * nAlpha));  % calculate the exact number of frames per stimulus
 
-    disp('aaaaaa');
-    disp(framesPerStimuli);
 
     for Task=1:nTask
         for Species=1:nSpecies
@@ -146,32 +144,33 @@ try
                      s = sizepick;
                      destrect = [x0-s*xsize/2+x,y0-s*ysize/2+y,x0+s*xsize/2+x,y0+s*ysize/2+y]; % For size variation
                        if mod(image,5) ~= 0 % checks if remainder is divisible by 5; if not, present standard
-                           %disp('standard'); % Use this line for checking output order only 
-                           %disp(thisTask(standard));
-                           filename = strjoin({'Images',speciesName,'gray',char(standardshow(1))}, '/');
-                           imdata = imread(char(filename));
-                           mytex = Screen('MakeTexture',w,imdata);
-                           
-                           % Adjust alpha
-                           alphaCount = 0;
-                           alpha(0);
 
-                           for currentFrame = 0:framesPerStimuli
-                               
-                               if currentFrame < (framesPerStimuli / 2)
-                                   alphaCount = alphaCount + (2/framesPerStimuli);
-                                   Screen('DrawTexture',w,mytex,[],destrect,[],[],alphaCount);
-                                   [standOn] = Screen('Flip',w);
-                                   % WaitSecs((1/(framesPerStimuli * FreqssVEP)));
+                           for currentAlpha = 1:nAlpha
 
-                               elseif currentFrame >= (framesPerStimuli / 2)
-                                   alphaCount = alphaCount - (2/framesPerStimuli);
-                                   Screen('DrawTexture',w,mytex,[],destrect,[],[],alphaCount);
-                                   [standOn] = Screen('Flip',w);
-                                   % WaitSecs((1/(framesPerStimuli * FreqssVEP)));
-
+                               shortenedStimName = '';
+                               currentStimName = char(standardshow(1));
+                               if length(currentStimName) == 5
+                                   shortenedStimName = currentStimName(1);
+                               end
+                               if length(currentStimName) == 6
+                                   shortenedStimName = currentStimName(1:2);
                                end
 
+                               disp(currentAlpha);
+                               disp(nAlpha);
+
+
+                               filename = strcat('Images\', speciesName, '\', shortenedStimName, '\', shortenedStimName, '_', int2str(currentAlpha), '.png');
+                               
+                               disp(filename);
+
+                               imdata = imread(char(filename));
+                               mytex = Screen('MakeTexture',w,imdata);
+
+                               Screen('DrawTexture',w,mytex,[],destrect,[],[],[]);
+                               [standOn] = Screen('Flip',w);
+                               WaitSecs((1/(framesPerStimuli * FreqssVEP)));
+                               
                            end
 
                        elseif mod(image,5) == 0 % if remainder is divisible by 5, present oddball
@@ -181,32 +180,33 @@ try
                            end
                            oddball = newoddball;
                            oddballshow = thisTask(newoddball);
-                           %disp('oddball'); % Use to check output
-                           %disp(oddballshow); 
-                           filename = strjoin({'Images',speciesName,'gray',char(oddballshow(1))}, '/');
-                           imdata = imread(char(filename));
-                           mytex = Screen('MakeTexture',w,imdata);
-                           
-                           % Adjust alpha
-                           alphaCount = 0;
-                           alpha(0);
 
-                           for currentFrame = 0:framesPerStimuli
-                               
-                               if currentFrame < (framesPerStimuli / 2)
-                                   alphaCount = alphaCount + (2/framesPerStimuli);
-                                   Screen('DrawTexture',w,mytex,[],destrect,[],[],alphaCount);
-                                   [standOn] = Screen('Flip',w);
-                                   % WaitSecs((1/(framesPerStimuli * FreqssVEP)));
 
-                               elseif currentFrame >= (framesPerStimuli / 2)
-                                   alphaCount = alphaCount - (2/framesPerStimuli);
-                                   Screen('DrawTexture',w,mytex,[],destrect,[],[],alphaCount);
-                                   [standOn] = Screen('Flip',w);
-                                   % WaitSecs((1/(framesPerStimuli * FreqssVEP)));
+                           for currentAlpha = 1:nAlpha
 
+                               shortenedStimName = '';
+                               currentStimName = char(standardshow(1));
+                               if length(currentStimName) == 5
+                                   shortenedStimName = currentStimName(1);
+                               end
+                               if length(currentStimName) == 6
+                                   shortenedStimName = currentStimName(1:2);
                                end
 
+                               disp(shortenedStimName);
+                               disp(length(currentStimName));
+
+                               filename = strcat('Images\', speciesName, '\', shortenedStimName, '\', shortenedStimName, '_', int2str(currentAlpha), '.png');
+                               
+                               disp(filename);
+
+                               imdata = imread(char(filename));
+                               mytex = Screen('MakeTexture',w,imdata);
+
+                               Screen('DrawTexture',w,mytex,[],destrect,[],[],[]);
+                               [standOn] = Screen('Flip',w);
+                               WaitSecs((1/(framesPerStimuli * FreqssVEP)));
+                               
                            end
                        end    
                    end
