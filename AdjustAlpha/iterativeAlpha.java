@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class iterativeAlpha {
@@ -18,7 +19,7 @@ public class iterativeAlpha {
         String[] capuchinNames = {"Bailey", "Gabe", "Gambit", "Griffin", "Lexi", "Liam", "Lily", "Logan", "Nala", "Nykema", "Widget", "Wren"};
         String[] macaqueNames  = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"};
 
-        String inputPath  = "C:\\Users\\Jim\\Code\\BCD\\HillaryDissertation\\Images\\";
+        String inputPath  = "C:\\Users\\Jim\\IdeaProjects\\AdjustAlpha\\Images\\";
         String outputPath = "C:\\Users\\Jim\\IdeaProjects\\AdjustAlpha\\";
 
 
@@ -26,7 +27,8 @@ public class iterativeAlpha {
         {
             BufferedImage src = null;
             String inputfile;
-            String destfile;
+//            String destfile;
+            String destlocation;
             String fileExtension = ".png:";
             File currentFile;
 
@@ -35,7 +37,7 @@ public class iterativeAlpha {
             {
                 int fileName = faceNumber % 12;
 
-                currentFile = new File(capuchinNames[faceNumber]);
+                currentFile = new File(macaqueNames[faceNumber] + "_" + capuchinNames[faceNumber]);
                 if(!currentFile.exists())
                 {
                     currentFile.mkdir();
@@ -47,7 +49,7 @@ public class iterativeAlpha {
                 }
 
                 inputfile = inputPath + "Capuchins\\" + capuchinNames[faceNumber];
-                destfile = currentFile.getAbsolutePath() + "\\" + capuchinNames[fileName];
+                destlocation = currentFile.getAbsolutePath() + "\\" + (faceNumber + 1) + "_" + capuchinNames[fileName];
             }
             else
             {
@@ -65,12 +67,15 @@ public class iterativeAlpha {
                 }
 
                 inputfile = inputPath + "Macaques\\" + macaqueNames[fileName];
-                destfile = currentFile.getAbsolutePath() + "\\" + macaqueNames[fileName];
+                destlocation = currentFile.getAbsolutePath() + "\\" + macaqueNames[fileName];
             }
+
+            String nameOfFile = inputfile + ".png";
 
             try {
                 src = ImageIO.read(new File(inputfile + ".png"));
             } catch (IOException e) {
+                e = new IOException("Cannot find image source.");
             }
 
             int width = src.getWidth();
@@ -83,15 +88,14 @@ public class iterativeAlpha {
 
                 Alpha(src, dst, alpha);
 
-                String currentDestFile = destfile;
+                src = dst;
+
+                String currentDestFile = destlocation;
 
                 currentDestFile += "_";
                 currentDestFile += j + 1;
-//            currentDestFile += fileExtension;
 
                 System.out.println(currentDestFile);
-
-                src = dst;
 
                 File outfile = new File(currentDestFile + ".png");
                 try {
