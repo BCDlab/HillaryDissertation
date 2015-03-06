@@ -34,6 +34,34 @@ try
     [LabelNames] = textread('Lists/Labels.txt','%s'); %#ok<*REMFF1>
     [NoiseFile] = textread('Lists/Noise.txt','%s'); %#ok<*REMFF1>
 
+    % text files for individual species
+    [Bailey] = textread('Lists/Capuchins/Bailey.txt','%s');
+    [Gabe] = textread('Lists/Capuchins/Gabe.txt','%s');
+    [Gambit] = textread('Lists/Capuchins/Gambit.txt','%s');
+    [Griffin] = textread('Lists/Capuchins/Griffin.txt','%s');
+    [Lexi] = textread('Lists/Capuchins/Lexi.txt','%s');
+    [Liam] = textread('Lists/Capuchins/Liam.txt','%s');
+    [Lily] = textread('Lists/Capuchins/Lily.txt','%s');
+    [Logan] = textread('Lists/Capuchins/Logan.txt','%s');
+    [Nala] = textread('Lists/Capuchins/Nala.txt','%s');
+    [Nykema] = textread('Lists/Capuchins/Nykema.txt','%s');
+    [Widget] = textread('Lists/Capuchins/Widget.txt','%s');
+    [Wren] = textread('Lists/Capuchins/Wren.txt','%s');
+
+    [Macaque1] = textread('Lists/Macaques/1.txt','%s');
+    [Macaque2] = textread('Lists/Macaques/2.txt','%s');
+    [Macaque3] = textread('Lists/Macaques/3.txt','%s');
+    [Macaque4] = textread('Lists/Macaques/4.txt','%s');
+    [Macaque5] = textread('Lists/Macaques/5.txt','%s');
+    [Macaque6] = textread('Lists/Macaques/6.txt','%s');
+    [Macaque7] = textread('Lists/Macaques/7.txt','%s');
+    [Macaque8] = textread('Lists/Macaques/8.txt','%s');
+    [Macaque9] = textread('Lists/Macaques/9.txt','%s');
+    [Macaque10] = textread('Lists/Macaques/10.txt','%s');
+    [Macaque11] = textread('Lists/Macaques/11.txt','%s');
+    [Macaque12] = textread('Lists/Macaques/12.txt','%s');
+
+
     % Shuffle order of each species and create a randomized list of each
     % species
     nMacaque = length(MacaqueNames);
@@ -146,8 +174,14 @@ try
                        if mod(image,5) ~= 0 % checks if remainder is divisible by 5; if not, present standard
 
                            for currentAlpha = 1:nAlpha
+                             shortenedStimName = '';
+                             
+                             if speciesName == 'Capuchins'
 
-                               shortenedStimName = '';
+                             end
+
+                             if speciesName == 'Macaques'
+
                                currentStimName = char(standardshow(1));
                                if length(currentStimName) == 5
                                    shortenedStimName = currentStimName(1);
@@ -156,20 +190,21 @@ try
                                    shortenedStimName = currentStimName(1:2);
                                end
 
-                               disp(currentAlpha);
-                               disp(nAlpha);
+                             end
 
 
-                               filename = strcat('Images\', speciesName, '\', shortenedStimName, '\', shortenedStimName, '_', int2str(currentAlpha), '.png');
-                               
-                               disp(filename);
 
-                               imdata = imread(char(filename));
-                               mytex = Screen('MakeTexture',w,imdata);
 
-                               Screen('DrawTexture',w,mytex,[],destrect,[],[],[]);
-                               [standOn] = Screen('Flip',w);
-                               WaitSecs((1/(framesPerStimuli * FreqssVEP)));
+                             filename = strcat('Images\', speciesName, '\', shortenedStimName, '\', shortenedStimName, '_', int2str(currentAlpha), '.png');
+                             
+                             disp(filename);
+
+                             imdata = imread(char(filename));
+                             mytex = Screen('MakeTexture',w,imdata);
+
+                             Screen('DrawTexture',w,mytex,[],destrect,[],[],[]);
+                             [standOn] = Screen('Flip',w);
+                             WaitSecs((1/(framesPerStimuli * FreqssVEP)));
                                
                            end
 
@@ -208,6 +243,7 @@ try
                                WaitSecs((1/(framesPerStimuli * FreqssVEP)));
                                
                            end
+
                        end    
                    end
                    Screen('Close'); % Supposed to clean up old textures
