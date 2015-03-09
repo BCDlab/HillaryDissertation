@@ -21,16 +21,19 @@ try
      counterbalance = str2double(counterbalance);
       
     % Set stimuli directories for each species (to present images)
-    Macaques = dir(fullfile('\Images\Macaques\','*.png'));
-    Capuchins = dir(fullfile('\Images\Capuchins\','*.png'));
+    Macaques = dir(fullfile('/Images/FullAlpha/Macaques/','*.png'));
+    Capuchins = dir(fullfile('/Images/FullAlpha/Capuchins/','*.png'));
 
     % Set stimuli directory for audio files
-    Labels = dir(fullfile('\Audio','*.wav'));
-    Noise = dir(fullfile('Audio','Noise.wav'));
+    Labels = dir(fullfile('/Audio','*.wav'));
+    Noise = dir(fullfile('/Audio','Noise.wav'));
 
     % Read in text files for stim lists
     [MacaqueNames] = textread('Lists/Macaques.txt','%s'); %#ok<*REMFF1>
     [CapuchinNames] = textread('Lists/Capuchins.txt','%s'); %#ok<*REMFF1>
+    [AlphaCapuchinNames] = textread('Lists/AlphaCapuchins.txt','%s'); %#ok<*REMFF1>
+    [AlphaMacaqueNames] = textread('Lists/AlphaMacaques.txt','%s'); %#ok<*REMFF1>
+
     [LabelNames] = textread('Lists/Labels.txt','%s'); %#ok<*REMFF1>
     [NoiseFile] = textread('Lists/Noise.txt','%s'); %#ok<*REMFF1>
 
@@ -173,40 +176,17 @@ try
                      destrect = [x0-s*xsize/2+x,y0-s*ysize/2+y,x0+s*xsize/2+x,y0+s*ysize/2+y]; % For size variation
                        if mod(image,5) ~= 0 % checks if remainder is divisible by 5; if not, present standard
 
-                           for currentAlpha = 1:nAlpha
-                             shortenedStimName = '';
-                             
-                             if speciesName == 'Capuchins'
+                           % filename = strjoin({'Images','FullAlpha',speciesName,char(standardshow(1))}, '/');
+                           % imdata = imread(char(filename));
+                           % mytex = Screen('MakeTexture',w,imdata);
+                           % Screen('DrawTexture',w,mytex,[],destrect);
+                           % [standOn] = Screen('Flip',w);
+                           % WaitSecs(1/FreqssVEP);
+                           % Screen('Flip',w);
 
-                             end
+                           disp(char(standardshow(1)));
 
-                             if speciesName == 'Macaques'
-
-                               currentStimName = char(standardshow(1));
-                               if length(currentStimName) == 5
-                                   shortenedStimName = currentStimName(1);
-                               end
-                               if length(currentStimName) == 6
-                                   shortenedStimName = currentStimName(1:2);
-                               end
-
-                             end
-
-
-
-
-                             filename = strcat('Images\', speciesName, '\', shortenedStimName, '\', shortenedStimName, '_', int2str(currentAlpha), '.png');
-                             
-                             disp(filename);
-
-                             imdata = imread(char(filename));
-                             mytex = Screen('MakeTexture',w,imdata);
-
-                             Screen('DrawTexture',w,mytex,[],destrect,[],[],[]);
-                             [standOn] = Screen('Flip',w);
-                             WaitSecs((1/(framesPerStimuli * FreqssVEP)));
-                               
-                           end
+                           % folderName = strjoin({'Images', speciesName, char(standardshow(1))});
 
                        elseif mod(image,5) == 0 % if remainder is divisible by 5, present oddball
                            newoddball = randi(4);
@@ -217,32 +197,32 @@ try
                            oddballshow = thisTask(newoddball);
 
 
-                           for currentAlpha = 1:nAlpha
+                           % for currentAlpha = 1:nAlpha
 
-                               shortenedStimName = '';
-                               currentStimName = char(standardshow(1));
-                               if length(currentStimName) == 5
-                                   shortenedStimName = currentStimName(1);
-                               end
-                               if length(currentStimName) == 6
-                                   shortenedStimName = currentStimName(1:2);
-                               end
+                           %     shortenedStimName = '';
+                           %     currentStimName = char(standardshow(1));
+                           %     if length(currentStimName) == 5
+                           %         shortenedStimName = currentStimName(1);
+                           %     end
+                           %     if length(currentStimName) == 6
+                           %         shortenedStimName = currentStimName(1:2);
+                           %     end
 
-                               disp(shortenedStimName);
-                               disp(length(currentStimName));
+                           %     disp(shortenedStimName);
+                           %     disp(length(currentStimName));
 
-                               filename = strcat('Images\', speciesName, '\', shortenedStimName, '\', shortenedStimName, '_', int2str(currentAlpha), '.png');
+                           %     filename = strcat('Images\', speciesName, '\', shortenedStimName, '\', shortenedStimName, '_', int2str(currentAlpha), '.png');
                                
-                               disp(filename);
+                           %     disp(filename);
 
-                               imdata = imread(char(filename));
-                               mytex = Screen('MakeTexture',w,imdata);
+                           %     imdata = imread(char(filename));
+                           %     mytex = Screen('MakeTexture',w,imdata);
 
-                               Screen('DrawTexture',w,mytex,[],destrect,[],[],[]);
-                               [standOn] = Screen('Flip',w);
-                               WaitSecs((1/(framesPerStimuli * FreqssVEP)));
+                           %     Screen('DrawTexture',w,mytex,[],destrect,[],[],[]);
+                           %     [standOn] = Screen('Flip',w);
+                           %     WaitSecs((1/(framesPerStimuli * FreqssVEP)));
                                
-                           end
+                           % end
 
                        end    
                    end
@@ -306,7 +286,8 @@ try
                            MySoundHandle = PsychPortAudio('Open',[],[],0,MySoundFreq,Channels);
                            PsychPortAudio('FillBuffer',MySoundHandle,MySoundData,0);
                            % disp(faceshow); % Use to check output of filenames
-                           filename = strjoin({'Images',speciesName,'gray',char(faceshow(1))}, '/');
+                           filename = strjoin({'Images','FullAlpha',speciesName,char(faceshow(1))}, '/');
+                           % disp(filename);
                            imdata = imread(char(filename));
                            mytex = Screen('MakeTexture',w,imdata);
                            [X,Y] = RectCenter(wRect); % Centers fixation cross
@@ -331,7 +312,7 @@ try
                            fprintf(fid,'%s\t%d\t%d\t%d\t%s\t%s\t%s\n',subject,counterbalance,Task,Trial,char(faceshow),monkeyspecies,labeltype);
                end  
             elseif Task==3
-    standard = -1; % initially sets standard to something impossible
+               standard = -1; % initially sets standard to something impossible
                for Trial=1:nTrialssVEP
                    oddball = -1;
                    newstandard = randi(4);
@@ -345,9 +326,7 @@ try
                      s = sizepick;
                      destrect = [x0-s*xsize/2+x,y0-s*ysize/2+y,x0+s*xsize/2+x,y0+s*ysize/2+y]; % For size variation
                        if mod(image,5) ~= 0 % checks if remainder is divisible by 5; if not, present standard
-                           %disp('standard'); % Use this line for checking output order only 
-                           %disp(thisTask(standard));
-                           filename = strjoin({'Images',speciesName,'gray',char(standardshow(1))}, '/');
+                           filename = strjoin({'Images','FullAlpha',speciesName,char(standardshow(1))}, '/');
                            imdata = imread(char(filename));
                            mytex = Screen('MakeTexture',w,imdata);
                            Screen('DrawTexture',w,mytex,[],destrect);
@@ -361,9 +340,7 @@ try
                            end
                            oddball = newoddball;
                            oddballshow = thisTask(newoddball);
-                           %disp('oddball'); % Use to check output
-                           %disp(oddballshow); 
-                           filename = strjoin({'Images',speciesName,'gray',char(oddballshow(1))}, '/');
+                           filename = strjoin({'Images','FullAlpha',speciesName,char(oddballshow(1))}, '/');
                            imdata = imread(char(filename));
                            mytex = Screen('MakeTexture',w,imdata);
                            Screen('DrawTexture',w,mytex,[],destrect);
@@ -385,6 +362,9 @@ try
 
     %PsychPortAudio('Stop',MySoundHandle);
     %PsychPortAudio('Close',MySoundHandle);
+
+    disp(' ');
+    disp('Process finished with exit code 0');
 
 
 catch
