@@ -185,6 +185,7 @@ try
                            % Screen('Flip',w);
 
                            disp(char(standardshow(1)));
+                           disp(class(char(standardshow(1))));
 
                            % folderName = strjoin({'Images', speciesName, char(standardshow(1))});
 
