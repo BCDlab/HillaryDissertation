@@ -365,7 +365,7 @@ try
     %PsychPortAudio('Close',MySoundHandle);
 
     disp(' ');
-    disp('Process finished with exit code 0');
+    disp('Process complete.');
 
 
 catch
