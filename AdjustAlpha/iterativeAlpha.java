@@ -12,15 +12,15 @@ public class iterativeAlpha {
 
     public static void main(String args[])
     {
-        // the numbder of alpha steps per image
+        // the number of alpha steps per image
         float numNewImages = 30;
 
         // the names of the images to be altered
         String[] capuchinNames = {"Bailey", "Gabe", "Gambit", "Griffin", "Lexi", "Liam", "Lily", "Logan", "Nala", "Nykema", "Widget", "Wren"};
         String[] macaqueNames  = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"};
 
-        String inputPath  = "C:\\Users\\Jim\\IdeaProjects\\AdjustAlpha\\Images\\";
-        String outputPath = "C:\\Users\\Jim\\IdeaProjects\\AdjustAlpha\\";
+        String inputPath  = "/Users/jim/Desktop/Images/";
+        String outputPath = "/Users/jim/Desktop/output/";
 
 
         for(int faceNumber = 0; faceNumber < capuchinNames.length + macaqueNames.length; ++faceNumber)
@@ -48,8 +48,8 @@ public class iterativeAlpha {
                     currentFile.mkdir();
                 }
 
-                inputfile = inputPath + "Capuchins\\" + capuchinNames[faceNumber];
-                destlocation = currentFile.getAbsolutePath() + "\\" + (faceNumber + 1) + "_" + capuchinNames[fileName];
+                inputfile = inputPath + "Capuchins/" + capuchinNames[faceNumber];
+                destlocation = currentFile.getAbsolutePath() + "/" + (faceNumber + 1) + "_" + capuchinNames[fileName];
             }
             else
             {
@@ -66,14 +66,14 @@ public class iterativeAlpha {
                     currentFile.mkdir();
                 }
 
-                inputfile = inputPath + "Macaques\\" + macaqueNames[fileName];
-                destlocation = currentFile.getAbsolutePath() + "\\" + macaqueNames[fileName];
+                inputfile = inputPath + "Macaques/" + macaqueNames[fileName];
+                destlocation = currentFile.getAbsolutePath() + "/" + macaqueNames[fileName];
             }
 
             String nameOfFile = inputfile + ".png";
 
             try {
-                src = ImageIO.read(new File(inputfile + ".png"));
+                src = ImageIO.read(new File(nameOfFile));
             } catch (IOException e) {
                 e = new IOException("Cannot find image source.");
             }
