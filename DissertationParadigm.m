@@ -3,14 +3,10 @@ try
     AssertOpenGL;
 
     % Prompt box for subnum and counterbalance; creates variables for these
-    % prompt = {'Subject Number','Counterbalance'};
-    % defaults = {'1','1'};
-    % answer = inputdlg(prompt,'Subnum',1,defaults);
-    % [subject,counterbalance] = deal(answer{:});
-
-    Subnum = 1;
-    subject = 1;
-    counterbalance = 1;
+    prompt = {'Subject Number','Counterbalance'};
+    defaults = {'1','1'};
+    answer = inputdlg(prompt,'Subnum',1,defaults);
+    [subject,counterbalance] = deal(answer{:});
 
     rng('Shuffle'); 
     fid = fopen('Subinfo.txt','a+');
@@ -84,8 +80,8 @@ try
     gray = GrayIndex(screennum);
     [w, wRect] = Screen('OpenWindow',screennum,gray);
     Screen(w,'BlendFunction',GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    fps = 60;
-    hz=Screen(screennum,'FrameRate',[], [fps]);
+    fps = 120;
+    hz=Screen(screennum,'FrameRate',[], fps);
 
     % Set up for ssVEP size variation
     xsize = 400;
@@ -108,9 +104,8 @@ try
     nTrialsERP = 3; % number of ERP training trials 
     nImagesssVEP = floor(TimessVEP*FreqssVEP); % floor stops presenting at an image instead of half an image or something
 
-    nAlpha = 30;  % the amount of different alpha values to be presented per stimuli; currently set (sort of arbitrarily to 30)
+    nAlpha = 10;  % the amount of different alpha values to be presented per stimuli; currently set (sort of arbitrarily to 30)
     framesPerStimuli = floor(1 / (FreqssVEP * nAlpha));  % calculate the exact number of frames per stimulus
-
 
     for Task=1:nTask
         for Species=1:nSpecies
@@ -150,24 +145,46 @@ try
                      s = sizepick;
                      destrect = [x0-s*xsize/2+x,y0-s*ysize/2+y,x0+s*xsize/2+x,y0+s*ysize/2+y]; % For size variation
                        if mod(image,5) ~= 0 % checks if remainder is divisible by 5; if not, present standard
+                           
+                           for down = 0 : 1
+                               if down == 0
+                                   for curAlpha = 1 : nAlpha
 
-                           % filename = strjoin({'Images','FullAlpha',speciesName,char(standardshow(1))}, '/');
-                           % imdata = imread(char(filename));
-                           % mytex = Screen('MakeTexture',w,imdata);
-                           % Screen('DrawTexture',w,mytex,[],destrect);
-                           % [standOn] = Screen('Flip',w);
-                           % WaitSecs(1/FreqssVEP);
-                           % Screen('Flip',w);
+                                      s = char(standardshow);
+                                      showstring = '';
+                                      if s(2) == '.'
+                                          showstring = s(1);
+                                      else
+                                          showstring = s(1:2);
+                                      end
 
-                           for curAlpha = 1 : nAlpha
-                              filename = strjoin({'Images', speciesName, strcat(char(standardshow(1)), '_', char(curAlpha), '.png')}, '/');
-                              imdata = imread(char(filename));
-                              mytex = Screen('MakeTexture', w, imdata);
-                              Screen('DrawTexture', w, mytex, [], destrect);
-                              [standon] = Screen('Flip', w);
-                              WaitSecs(1 / (FreqssVEP * nAlpha));
-                              % Screen('Flip', w);
-                            end
+                                      filename = strjoin({'Images', speciesName, strcat(showstring, '_', int2str(curAlpha), '.png')}, '/');
+                                      imdata = imread(char(filename));
+                                      mytex = Screen('MakeTexture', w, imdata);
+                                      Screen('DrawTexture', w, mytex, [], destrect);
+                                      [standon] = Screen('Flip', w);
+                                   end
+                               else
+                                   for curAlpha = 1 : nAlpha
+
+                                      a = nAlpha - curAlpha + 1;
+                                      
+                                      s = char(standardshow);
+                                      showstring = '';
+                                      if s(2) == '.'
+                                          showstring = s(1);
+                                      else
+                                          showstring = s(1:2);
+                                      end
+
+                                      filename = strjoin({'Images', speciesName, strcat(showstring, '_', int2str(a), '.png')}, '/');
+                                      imdata = imread(char(filename));
+                                      mytex = Screen('MakeTexture', w, imdata);
+                                      Screen('DrawTexture', w, mytex, [], destrect);
+                                      [standon] = Screen('Flip', w);
+                                   end
+                               end
+                           end
 
 
 
@@ -181,15 +198,45 @@ try
                            oddball = newoddball;
                            oddballshow = thisTask(newoddball);
 
-                           for curAlpha = 1 : nAlpha
-                              filename = strjoin({'Images', speciesName, strcat(char(odballshow(1)), '_', char(curAlpha), '.png')}, '/');
-                              imdata = imread(char(filename));
-                              mytex = Screen('MakeTexture', w, imdata);
-                              Screen('DrawTexture', w, mytex, [], destrect);
-                              [standon] = Screen('Flip', w);
-                              WaitSecs(1 / (FreqssVEP * nAlpha));
-                              % Screen('Flip', w);
-                            end
+                           for down = 0 : 1
+                               if down == 0
+                                   for curAlpha = 1 : nAlpha
+
+                                      s = char(oddballshow);
+                                      showstring = '';
+                                      if s(2) == '.'
+                                          showstring = s(1);
+                                      else
+                                          showstring = s(1:2);
+                                      end
+
+                                      filename = strjoin({'Images', speciesName, strcat(showstring, '_', int2str(curAlpha), '.png')}, '/');
+                                      imdata = imread(char(filename));
+                                      mytex = Screen('MakeTexture', w, imdata);
+                                      Screen('DrawTexture', w, mytex, [], destrect);
+                                      [standon] = Screen('Flip', w);
+                                   end
+                               else
+                                   for curAlpha = 1 : nAlpha
+
+                                      a = nAlpha - curAlpha + 1;
+                                      
+                                      s = char(oddballshow);
+                                      showstring = '';
+                                      if s(2) == '.'
+                                          showstring = s(1);
+                                      else
+                                          showstring = s(1:2);
+                                      end
+
+                                      filename = strjoin({'Images', speciesName, strcat(showstring, '_', int2str(a), '.png')}, '/');
+                                      imdata = imread(char(filename));
+                                      mytex = Screen('MakeTexture', w, imdata);
+                                      Screen('DrawTexture', w, mytex, [], destrect);
+                                      [standon] = Screen('Flip', w);
+                                   end
+                               end
+                           end
 
 
 
@@ -255,7 +302,24 @@ try
                            MySoundHandle = PsychPortAudio('Open',[],[],0,MySoundFreq,Channels);
                            PsychPortAudio('FillBuffer',MySoundHandle,MySoundData,0);
                            % disp(faceshow); % Use to check output of filenames
-                           filename = strjoin({'Images','FullAlpha',speciesName,char(faceshow(1))}, '/');
+                           
+                           curFile = '';
+                           curStr = char(faceshow(1));
+                           if length(char(faceshow(1))) == 5
+                               curFile = curStr(1);
+                           end
+                           if length(char(faceshow(1))) == 6
+                               curFile = curStr(1:2);
+                           end
+                               
+                                 
+                           disp(nAlpha);
+                           charAlpha = int2str(nAlpha);
+                           disp(charAlpha);
+                               
+                           filename = strjoin({'Images',speciesName,strcat(curFile, '_', int2str(nAlpha), '.png')}, '/');
+                           
+                           
                            % disp(filename);
                            imdata = imread(char(filename));
                            mytex = Screen('MakeTexture',w,imdata);
@@ -295,27 +359,95 @@ try
                      s = sizepick;
                      destrect = [x0-s*xsize/2+x,y0-s*ysize/2+y,x0+s*xsize/2+x,y0+s*ysize/2+y]; % For size variation
                        if mod(image,5) ~= 0 % checks if remainder is divisible by 5; if not, present standard
-                           filename = strjoin({'Images','FullAlpha',speciesName,char(standardshow(1))}, '/');
-                           imdata = imread(char(filename));
-                           mytex = Screen('MakeTexture',w,imdata);
-                           Screen('DrawTexture',w,mytex,[],destrect);
-                           [standOn] = Screen('Flip',w);
-                           WaitSecs(1/FreqssVEP);
-                           Screen('Flip',w);
+                           
+                           for down = 0 : 1
+                               if down == 0
+                                   for curAlpha = 1 : nAlpha
+
+                                      s = char(standardshow);
+                                      showstring = '';
+                                      if s(2) == '.'
+                                          showstring = s(1);
+                                      else
+                                          showstring = s(1:2);
+                                      end
+
+                                      filename = strjoin({'Images', speciesName, strcat(showstring, '_', int2str(curAlpha), '.png')}, '/');
+                                      imdata = imread(char(filename));
+                                      mytex = Screen('MakeTexture', w, imdata);
+                                      Screen('DrawTexture', w, mytex, [], destrect);
+                                      [standon] = Screen('Flip', w);
+                                   end
+                               else
+                                   for curAlpha = 1 : nAlpha
+
+                                      a = nAlpha - curAlpha + 1;
+                                      
+                                      s = char(standardshow);
+                                      showstring = '';
+                                      if s(2) == '.'
+                                          showstring = s(1);
+                                      else
+                                          showstring = s(1:2);
+                                      end
+
+                                      filename = strjoin({'Images', speciesName, strcat(showstring, '_', int2str(a), '.png')}, '/');
+                                      imdata = imread(char(filename));
+                                      mytex = Screen('MakeTexture', w, imdata);
+                                      Screen('DrawTexture', w, mytex, [], destrect);
+                                      [standon] = Screen('Flip', w);
+                                   end
+                               end
+                           end
+
+                           
                        elseif mod(image,5) == 0 % if remainder is divisible by 5, present oddball
                            newoddball = randi(4);
                            while newoddball == oddball || newoddball == standard
                                newoddball = randi(4);
                            end
-                           oddball = newoddball;
-                           oddballshow = thisTask(newoddball);
-                           filename = strjoin({'Images','FullAlpha',speciesName,char(oddballshow(1))}, '/');
-                           imdata = imread(char(filename));
-                           mytex = Screen('MakeTexture',w,imdata);
-                           Screen('DrawTexture',w,mytex,[],destrect);
-                           [oddOn] = Screen('Flip',w);
-                           WaitSecs(1/FreqssVEP);
-                           Screen('Flip',w);
+                           
+                           for down = 0 : 1
+                               if down == 0
+                                   for curAlpha = 1 : nAlpha
+
+                                      s = char(oddballshow);
+                                      showstring = '';
+                                      if s(2) == '.'
+                                          showstring = s(1);
+                                      else
+                                          showstring = s(1:2);
+                                      end
+
+                                      filename = strjoin({'Images', speciesName, strcat(showstring, '_', int2str(curAlpha), '.png')}, '/');
+                                      imdata = imread(char(filename));
+                                      mytex = Screen('MakeTexture', w, imdata);
+                                      Screen('DrawTexture', w, mytex, [], destrect);
+                                      [standon] = Screen('Flip', w);
+                                   end
+                               else
+                                   for curAlpha = 1 : nAlpha
+
+                                      a = nAlpha - curAlpha + 1;
+                                      
+                                      s = char(oddballshow);
+                                      showstring = '';
+                                      if s(2) == '.'
+                                          showstring = s(1);
+                                      else
+                                          showstring = s(1:2);
+                                      end
+
+                                      filename = strjoin({'Images', speciesName, strcat(showstring, '_', int2str(a), '.png')}, '/');
+                                      imdata = imread(char(filename));
+                                      mytex = Screen('MakeTexture', w, imdata);
+                                      Screen('DrawTexture', w, mytex, [], destrect);
+                                      [standon] = Screen('Flip', w);
+                                   end
+                               end
+                           end
+
+                           
                        end
                    end
                fprintf(fid,'%s\t%d\t%d\t%d\t%s\n',subject,counterbalance,Task,Trial,char(standardshow));    
