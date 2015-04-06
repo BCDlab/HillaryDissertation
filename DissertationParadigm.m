@@ -3,12 +3,16 @@ try
     AssertOpenGL;
 
     % Prompt box for subnum and counterbalance; creates variables for these
-    prompt = {'Subject Number','Counterbalance'};
-    defaults = {'1','1'};
-    answer = inputdlg(prompt,'Subnum',1,defaults);
-    [subject,counterbalance] = deal(answer{:});
+    % prompt = {'Subject Number','Counterbalance'};
+    % defaults = {'1','1'};
+    % answer = inputdlg(prompt,'Subnum',1,defaults);
+    % [subject,counterbalance] = deal(answer{:});
 
-    rng 'Shuffle'; 
+    Subnum = 1;
+    subject = 1;
+    counterbalance = 1;
+
+    rng('Shuffle'); 
     fid = fopen('Subinfo.txt','a+');
 
     % odd or even counterbalance
@@ -21,48 +25,19 @@ try
      counterbalance = str2double(counterbalance);
       
     % Set stimuli directories for each species (to present images)
-    Macaques = dir(fullfile('/Images/FullAlpha/Macaques/','*.png'));
-    Capuchins = dir(fullfile('/Images/FullAlpha/Capuchins/','*.png'));
+    Macaques = dir(fullfile('/Images/Macaques/','*.png'));
+    Capuchins = dir(fullfile('/Images/Capuchins/','*.png'));
 
     % Set stimuli directory for audio files
     Labels = dir(fullfile('/Audio','*.wav'));
     Noise = dir(fullfile('/Audio','Noise.wav'));
 
     % Read in text files for stim lists
-    [MacaqueNames] = textread('Lists/Macaques.txt','%s'); %#ok<*REMFF1>
-    [CapuchinNames] = textread('Lists/Capuchins.txt','%s'); %#ok<*REMFF1>
-    [AlphaCapuchinNames] = textread('Lists/AlphaCapuchins.txt','%s'); %#ok<*REMFF1>
-    [AlphaMacaqueNames] = textread('Lists/AlphaMacaques.txt','%s'); %#ok<*REMFF1>
+    [MacaqueNames] = textread('Lists/Stimuli.txt','%s'); %#ok<*REMFF1>
+    [CapuchinNames] = textread('Lists/Stimuli.txt','%s'); %#ok<*REMFF1>
 
     [LabelNames] = textread('Lists/Labels.txt','%s'); %#ok<*REMFF1>
     [NoiseFile] = textread('Lists/Noise.txt','%s'); %#ok<*REMFF1>
-
-    % text files for individual species
-    [Bailey] = textread('Lists/Capuchins/Bailey.txt','%s');
-    [Gabe] = textread('Lists/Capuchins/Gabe.txt','%s');
-    [Gambit] = textread('Lists/Capuchins/Gambit.txt','%s');
-    [Griffin] = textread('Lists/Capuchins/Griffin.txt','%s');
-    [Lexi] = textread('Lists/Capuchins/Lexi.txt','%s');
-    [Liam] = textread('Lists/Capuchins/Liam.txt','%s');
-    [Lily] = textread('Lists/Capuchins/Lily.txt','%s');
-    [Logan] = textread('Lists/Capuchins/Logan.txt','%s');
-    [Nala] = textread('Lists/Capuchins/Nala.txt','%s');
-    [Nykema] = textread('Lists/Capuchins/Nykema.txt','%s');
-    [Widget] = textread('Lists/Capuchins/Widget.txt','%s');
-    [Wren] = textread('Lists/Capuchins/Wren.txt','%s');
-
-    [Macaque1] = textread('Lists/Macaques/1.txt','%s');
-    [Macaque2] = textread('Lists/Macaques/2.txt','%s');
-    [Macaque3] = textread('Lists/Macaques/3.txt','%s');
-    [Macaque4] = textread('Lists/Macaques/4.txt','%s');
-    [Macaque5] = textread('Lists/Macaques/5.txt','%s');
-    [Macaque6] = textread('Lists/Macaques/6.txt','%s');
-    [Macaque7] = textread('Lists/Macaques/7.txt','%s');
-    [Macaque8] = textread('Lists/Macaques/8.txt','%s');
-    [Macaque9] = textread('Lists/Macaques/9.txt','%s');
-    [Macaque10] = textread('Lists/Macaques/10.txt','%s');
-    [Macaque11] = textread('Lists/Macaques/11.txt','%s');
-    [Macaque12] = textread('Lists/Macaques/12.txt','%s');
 
 
     % Shuffle order of each species and create a randomized list of each
@@ -184,10 +159,19 @@ try
                            % WaitSecs(1/FreqssVEP);
                            % Screen('Flip',w);
 
-                           disp(char(standardshow(1)));
-                           disp(class(char(standardshow(1))));
+                           for curAlpha = 1 : nAlpha
+                              filename = strjoin({'Images', speciesName, strcat(char(standardshow(1)), '_', char(curAlpha), '.png')}, '/');
+                              imdata = imread(char(filename));
+                              mytex = Screen('MakeTexture', w, imdata);
+                              Screen('DrawTexture', w, mytex, [], destrect);
+                              [standon] = Screen('Flip', w);
+                              WaitSecs(1 / (FreqssVEP * nAlpha));
+                              % Screen('Flip', w);
+                            end
 
-                           % folderName = strjoin({'Images', speciesName, char(standardshow(1))});
+
+
+
 
                        elseif mod(image,5) == 0 % if remainder is divisible by 5, present oddball
                            newoddball = randi(4);
@@ -197,33 +181,17 @@ try
                            oddball = newoddball;
                            oddballshow = thisTask(newoddball);
 
+                           for curAlpha = 1 : nAlpha
+                              filename = strjoin({'Images', speciesName, strcat(char(odballshow(1)), '_', char(curAlpha), '.png')}, '/');
+                              imdata = imread(char(filename));
+                              mytex = Screen('MakeTexture', w, imdata);
+                              Screen('DrawTexture', w, mytex, [], destrect);
+                              [standon] = Screen('Flip', w);
+                              WaitSecs(1 / (FreqssVEP * nAlpha));
+                              % Screen('Flip', w);
+                            end
 
-                           % for currentAlpha = 1:nAlpha
 
-                           %     shortenedStimName = '';
-                           %     currentStimName = char(standardshow(1));
-                           %     if length(currentStimName) == 5
-                           %         shortenedStimName = currentStimName(1);
-                           %     end
-                           %     if length(currentStimName) == 6
-                           %         shortenedStimName = currentStimName(1:2);
-                           %     end
-
-                           %     disp(shortenedStimName);
-                           %     disp(length(currentStimName));
-
-                           %     filename = strcat('Images\', speciesName, '\', shortenedStimName, '\', shortenedStimName, '_', int2str(currentAlpha), '.png');
-                               
-                           %     disp(filename);
-
-                           %     imdata = imread(char(filename));
-                           %     mytex = Screen('MakeTexture',w,imdata);
-
-                           %     Screen('DrawTexture',w,mytex,[],destrect,[],[],[]);
-                           %     [standOn] = Screen('Flip',w);
-                           %     WaitSecs((1/(framesPerStimuli * FreqssVEP)));
-                               
-                           % end
 
                        end    
                    end

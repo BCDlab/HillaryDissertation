@@ -13,13 +13,13 @@ public class iterativeAlpha {
     public static void main(String args[])
     {
         // the number of alpha steps per image
-        float numNewImages = 30;
+        float numNewImages = 10;
 
         // the names of the images to be altered
         String[] capuchinNames = {"Bailey", "Gabe", "Gambit", "Griffin", "Lexi", "Liam", "Lily", "Logan", "Nala", "Nykema", "Widget", "Wren"};
         String[] macaqueNames  = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"};
 
-        String inputPath  = "/Users/jim/Desktop/Images/";
+        String inputPath  = "/Users/jim/code/BCD/DissertationParadigmData/Images/";
         String outputPath = "/Users/jim/Desktop/output/";
 
 
@@ -27,9 +27,8 @@ public class iterativeAlpha {
         {
             BufferedImage src = null;
             String inputfile;
-//            String destfile;
             String destlocation;
-            String fileExtension = ".png:";
+            String fileExtension = ".png";
             File currentFile;
 
 
@@ -37,7 +36,7 @@ public class iterativeAlpha {
             {
                 int fileName = faceNumber % 12;
 
-                currentFile = new File(macaqueNames[faceNumber] + "_" + capuchinNames[faceNumber]);
+                currentFile = new File(macaqueNames[faceNumber]);
                 if(!currentFile.exists())
                 {
                     currentFile.mkdir();
@@ -49,7 +48,7 @@ public class iterativeAlpha {
                 }
 
                 inputfile = inputPath + "Capuchins/" + capuchinNames[faceNumber];
-                destlocation = currentFile.getAbsolutePath() + "/" + (faceNumber + 1) + "_" + capuchinNames[fileName];
+                destlocation =  outputPath + "Capuchins/" + (faceNumber + 1);
             }
             else
             {
@@ -67,10 +66,10 @@ public class iterativeAlpha {
                 }
 
                 inputfile = inputPath + "Macaques/" + macaqueNames[fileName];
-                destlocation = currentFile.getAbsolutePath() + "/" + macaqueNames[fileName];
+                destlocation = outputPath + "Macaques/" + macaqueNames[fileName];
             }
 
-            String nameOfFile = inputfile + ".png";
+            String nameOfFile = inputfile + fileExtension;
 
             try {
                 src = ImageIO.read(new File(nameOfFile));
@@ -97,7 +96,7 @@ public class iterativeAlpha {
 
                 System.out.println(currentDestFile);
 
-                File outfile = new File(currentDestFile + ".png");
+                File outfile = new File(currentDestFile + fileExtension);
                 try {
                     ImageIO.write(src, "png", outfile);
                 } catch (IOException e) {
