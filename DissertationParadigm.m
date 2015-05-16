@@ -1,3 +1,4 @@
+function y = DissertationParadigm()
 %% Initial set-up
 clc;
 clear;
@@ -118,8 +119,8 @@ try
     nStimuli = 5;
     TimessVEP = 10; % seconds
     FreqssVEP = 5.88; % Hz
-    nTrialssVEP = 1; % number of ssVEP trials
-    nTrialsERP = 3; % number of ERP training trials 
+    nTrialssVEP = 10; % number of ssVEP trials - 1
+    nTrialsERP = 60; % number of ERP training trials  - 3
     nImagesssVEP = floor(TimessVEP*FreqssVEP); % floor stops presenting at an image instead of half an image or something
 
     nAlpha = 5;  % the amount of different alpha values to be presented per stimuli; currently set (sort of arbitrarily to 30)
@@ -285,11 +286,8 @@ try
 %% Begin Executing Tasks
 
     newSec = GetSecs;
-    initialTime = GetSecs;
-    stimuliPresented = 0;
+    initialTime = GetSecs;    
     
-    
-    longTimes = LinkedList();
     imageCount = 0;
     
     times = LinkedList();
@@ -298,7 +296,10 @@ try
     
     for stim=1 : nSpecies
         for Trial=1:nTrialssVEP
-           NetStation('Event','svp+', GetSecs, 0.001, 'trl#',Trial); % signals the beginning of a trial
+         Screen(w, 'FillRect', gray);  % makes the screen blank
+         [buttons] = GetClicks(w); % Listens for mouseclicks
+          if any(buttons) % Present image on mouseclick
+            NetStation('Event','svp+', GetSecs, 0.001, 'trl#',Trial,'species',speciesName); % signals the beginning of a trial
            for image=1:nImagesssVEP
                destrect = destrect1.remove();
                if mod(image,5) ~= 0 % checks if remainder is divisible by 5; if not, present standard
@@ -351,10 +352,12 @@ try
                    times.add(newSec - oldTime);
 
                end    
-           end
+            end
+          end
+          Screen('Close'); % Supposed to clean up old textures
         end
 
-       Screen('Close'); % Supposed to clean up old textures
+       
        fprintf(fid,'%s\t%d\t%d\t%d\t%s\n',subject,counterbalance,Task,Trial,char(standardshow));
     end
     
@@ -449,20 +452,21 @@ try
                        Screen('FillRect', w, [0,0,0], FixCross');
                        Screen('Flip',w);
                        s3 = GetSecs;
-                       %NetStation('Event','fix+',s,0.001,'trl#',Trial);
+                       NetStation('Event','fix+',s3,0.001,'trl#',Trial);
                        [buttons] = GetClicks(w); % Listens for mouseclicks
                           if any(buttons) % Present image on mouseclick
                            Screen('DrawTexture',w,mytex);
                            [stimOn] = Screen('Flip',w);
-                           %NetStation('Event','stm+',stimOn,0.001,'trl#',Trial,'monk',monkeyspecies,'labl',labeltype);
+                           NetStation('Event','stm+',stimOn,0.001,'trl#',Trial,'monk',monkeyspecies,'name',face,'labl',labeltype);
                            startTime = PsychPortAudio('Start',MySoundHandle,1,0,1); % Jitter onset time between 10-300ms post-face onset
                            WaitSecs(FinishTime);
                            Screen('Flip',w);  
                            s2 = GetSecs;
-                           %NetStation('Event','stm-',s2,0.001);
+                           NetStation('Event','stm-',s2,0.001);
                           end
                        randi([800,1000]); % Random inter-trial interval   
-                       %WaitSecs(.5); 
+                       Screen('Close');
+                       PsychPortAudio('Close',MySoundHandle);
                        fprintf(fid,'%s\t%d\t%d\t%d\t%s\t%s\t%s\n',subject,counterbalance,Task,Trial,char(faceshow),monkeyspecies,labeltype);
            end                 
     end
@@ -472,8 +476,11 @@ try
     
     for stim=1 : nSpecies
         for Trial=1:nTrialssVEP
-           NetStation('Event','svp+', GetSecs, 0.001, 'trl#',Trial); % signals the beginning of a trial
-           for image=1:nImagesssVEP
+          Screen(w, 'FillRect', gray);  % makes the screen blank
+          [buttons] = GetClicks(w); % Listens for mouseclicks
+          if any(buttons) % Present image on mouseclick
+            NetStation('Event','svp+', GetSecs, 0.001, 'trl#',Trial,'species',speciesName); % signals the beginning of a trial
+            for image=1:nImagesssVEP
                destrect = destrect2.remove();
                if mod(image,5) ~= 0 % checks if remainder is divisible by 5; if not, present standard
                    
@@ -527,9 +534,10 @@ try
 
                end    
            end
+           Screen('Close'); % Supposed to clean up old textures
+          end
         end
 
-       Screen('Close'); % Supposed to clean up old textures
        fprintf(fid,'%s\t%d\t%d\t%d\t%s\n',subject,counterbalance,Task,Trial,char(standardshow));
     end
     
