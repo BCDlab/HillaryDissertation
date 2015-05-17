@@ -98,6 +98,7 @@ try
     screennum = 0;
     white = WhiteIndex(screennum);
     gray = GrayIndex(screennum);
+    black = BlackIndex(screennum);
     [w, wRect] = Screen('OpenWindow',screennum,gray);
     Screen(w,'BlendFunction',GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     fps = 75;
@@ -142,6 +143,9 @@ try
     destrect2 = LinkedList();
     
 %% Preload the stimuli for ssVEP tasks
+
+    Screen('DrawText', w, 'Preparing stimuli', x0 - 110, y0, black, gray);
+    [standon] = Screen('Flip', w);
     
     for Task=1:nTask
         for Species=1:nSpecies
@@ -280,8 +284,14 @@ try
     
     ssVEPStims1 = presStims1.clone();
     ssVEPStims2 = presStims2.clone();
+    
+    Screen('DrawText', w, 'Finished preparing stimuli, press any key to begin', x0 - 400, y0, black, gray);
+    [standon] = Screen('Flip', w);
 
-%     KbWait([], 2);    % postpone the presentation of the stimuli until any key is pressed
+    KbWait([], 2);    % postpone the presentation of the stimuli until any key is pressed
+    
+    Screen(w, 'FillRect', gray);
+    [standon] = Screen('Flip', w);
 
 %% Begin Executing Tasks
 
@@ -296,9 +306,10 @@ try
     
     for stim=1 : nSpecies
         for Trial=1:nTrialssVEP
-         Screen(w, 'FillRect', gray);  % makes the screen blank
+         Screen(w, 'FillRect', gray);  % makes the back buffer blank
+         [standon] = Screen('Flip', w); % flips the back and front buffer
          [buttons] = GetClicks(w); % Listens for mouseclicks
-          if any(buttons) % Present image on mouseclick
+          if any(buttons) % Present images on mouseclick
             NetStation('Event','svp+', GetSecs, 0.001, 'trl#',Trial,'species',speciesName); % signals the beginning of a trial
            for image=1:nImagesssVEP
                destrect = destrect1.remove();
@@ -477,6 +488,7 @@ try
     for stim=1 : nSpecies
         for Trial=1:nTrialssVEP
           Screen(w, 'FillRect', gray);  % makes the screen blank
+          [standon] = Screen('Flip', w);
           [buttons] = GetClicks(w); % Listens for mouseclicks
           if any(buttons) % Present image on mouseclick
             NetStation('Event','svp+', GetSecs, 0.001, 'trl#',Trial,'species',speciesName); % signals the beginning of a trial
