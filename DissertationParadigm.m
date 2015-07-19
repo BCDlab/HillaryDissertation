@@ -348,165 +348,166 @@ try
     
     Task = 1;
     
-    for stim=1 : nSpecies
-        if (stim == 1 && isEven == false) || (stim == 2 && isEven == true)
-            speciesName = 'Macaques';
-        elseif (stim == 1 && isEven == true) || (stim == 2 && isEven == false)
-            speciesName = 'Capuchins';
-        end
-        for Trial=1:nTrialssVEP
-         Screen(w, 'FillRect', gray);  % makes the back buffer blank
-         [standon] = Screen('Flip', w); % flips the back and front buffer
-         %[buttons] = GetClicks(w); % Listens for mouseclicks
-         switch speciesName %Change the event label based on species
-          case 'Macaques'
-           label = 'm11';
-          case 'Capuchins' 
-           label = 'c12';
-         end
-         soundfilerand = randi(2);
-          switch soundfilerand
-              case 1
-               dissoundfile = 's4.wav';
-              case 2
-               dissoundfile = 's5.wav';    
-          end
-          InitializePsychSound;
-          Channels = 1;
-          MySoundFreq = 11025;
-          disp(dissoundfile)
-          diswavdata = transpose(wavread(dissoundfile));
-          MySoundHandle = PsychPortAudio('Open',[],[],0,MySoundFreq,Channels);
-          PsychPortAudio('FillBuffer',MySoundHandle,diswavdata,0);
-           %gives chance to use distractors by looking until mouse click
-         [keyIsDown] = KbCheck(); %Listens for Keypresses
-         [xpos,ypos,buttons] = GetMouse();
-          while ~any(buttons) % Loops while no mouse buttons are pressed
-              [keyIsDown] = KbCheck();
-              [xpos,ypos,buttons] = GetMouse();
-               if any(keyIsDown)
-                    disrand = char(randi(2));
-                    switch disrand
-                        case 1
-                        disimage = Screen('MakeTexture',w,disimagedata1);
-                        case 2
-                        disimage = Screen('MakeTexture',w,disimagedata2);    
-                    end        
-                    disp(keyIsDown)
-                    
-                    %Screen('DrawTexture',w,mytex);
-                    Screen('DrawTexture',w,disimage);
-                    Screen('Flip',w)
-                    PsychPortAudio('Start',MySoundHandle,1,0,1);
-                     %PsychPortAudio('Start',MySoundHandle,1,0,1);
-                     
-                    WaitSecs(1.5)
-        %                                     while 1 < 2 %Endless Loop
-        %                                      KbEventFlush;   
-        %                                     [xpos,ypos,buttons] = GetMouse(w);
-        %                                         if any(keyIsDown) %Break the loop
-        %                                             break
-        %                                         end
-        %                                         
-        %                                     end
-        %                                    
-                   Screen(w, 'FillRect', gray);
-                   Screen('Flip',w);
-                   WaitSecs(.01)
-                   KbEventFlush
-               end
-   
-          end
-          KbEventFlush
-          
-          %if any(buttons) % Present images on mouseclick
-           
-           
-           NetStation('Event',label, GetSecs, 0.001, 'trl#',Trial,'species',speciesName); % signals the beginning of a trial
-           for image=1:nImagesssVEP
-               destrect = destrect1.remove();
-               if mod(image,5) ~= 0 % checks if remainder is divisible by 5; if not, present standard
-                   
-                   imageCount = imageCount + 1;
-                   imdata = imread(char(presStims1.remove()));
-                   mytex = Screen('MakeTexture', w, imdata);
-
-                   for curAlpha = 0 : nAlpha
-                      Screen('DrawTexture', w, mytex, [], destrect, [], [], curAlpha / nAlpha);
-                      [standon] = Screen('Flip', w);
-                      if curAlpha / nAlpha == 1
-                        NetStation('Event','a100',standon,0.001,'trl#',Trial,'monk',speciesName,'alpha#',curAlpha / nAlpha);
-                      elseif curAlpha / nAlpha == 0
-                        NetStation('Event','a000',standon,0.001,'trl#',Trial,'monk',speciesName,'alpha#',curAlpha / nAlpha);  
-                      end
-                      javaMethod('parkNanos', 'java.util.concurrent.locks.LockSupport', floor(milli * nMillis));
-                   end
-                   for curAlpha = 1 : nAlpha - 1
-                      if curAlpha / nAlpha == 1
-                        NetStation('Event','a100',standon,0.001,'trl#',Trial,'monk',speciesName,'alpha#',curAlpha / nAlpha);
-                      elseif curAlpha / nAlpha == 0
-                        NetStation('Event','a000',standon,0.001,'trl#',Trial,'monk',speciesName,'alpha#',curAlpha / nAlpha);
-                      end  
-                      Screen('DrawTexture', w, mytex, [], destrect, [], [], 1 - (curAlpha / nAlpha));
-                      [standon] = Screen('Flip', w);
-                      javaMethod('parkNanos', 'java.util.concurrent.locks.LockSupport', floor(milli * nMillis));
-                   end
-
-                   oldTime = newSec;
-                   newSec = GetSecs;
-                   times.add(newSec - oldTime);
-
-
-               elseif mod(image,5) == 0      % if remainder is divisible by 5, present oddball
-
-                   imageCount = imageCount + 1;
-                   
-                   imdata = imread(char(presStims1.remove()));
-                   %disp(char(presStims1.remove())) %Checking to make sure
-                   %the luminance is changing
-                   mytex = Screen('MakeTexture', w, imdata);
-
-                   for curAlpha = 0 : nAlpha
-
-                      Screen('DrawTexture', w, mytex, [], destrect, [], [], curAlpha / nAlpha);
-                      [standon] = Screen('Flip', w);
-                      if curAlpha / nAlpha == 1
-                        NetStation('Event','a100',standon,0.001,'trl#',Trial,'monk',speciesName,'alpha#',curAlpha / nAlpha);
-                      elseif curAlpha / nAlpha == 0
-                        NetStation('Event','a000',standon,0.001,'trl#',Trial,'monk',speciesName,'alpha#',curAlpha / nAlpha);
-                      end  
-  
-                      javaMethod('parkNanos', 'java.util.concurrent.locks.LockSupport', floor(milli * nMillis));
-                   end
-                   for curAlpha = 1 : nAlpha - 1
-
-                      Screen('DrawTexture', w, mytex, [], destrect, [], [], 1 - (curAlpha / nAlpha));
-                      [standon] = Screen('Flip', w);
-                      if curAlpha / nAlpha == 1
-                        NetStation('Event','a100',standon,0.001,'trl#',Trial,'monk',speciesName,'alpha#',curAlpha / nAlpha);
-                      elseif curAlpha / nAlpha == 0
-                        NetStation('Event','a000',standon,0.001,'trl#',Trial,'monk',speciesName,'alpha#',curAlpha / nAlpha);
-                      end  
-  
-                      javaMethod('parkNanos', 'java.util.concurrent.locks.LockSupport', floor(milli * nMillis));
-                   end
-
-                   oldTime = newSec;
-                   newSec = GetSecs;
-                   times.add(newSec - oldTime);
-
-               end    
-            end
-          %end
-          Screen('Close'); % Supposed to clean up old textures
-        end
-
-       
-       fprintf(fid,'%s\t%d\t%d\t%s\t%d\t%s\n',subject,counterbalance,Task,speciesName,Trial,char(standardshow));
-    end
+%     for stim=1 : nSpecies
+%         if (stim == 1 && isEven == false) || (stim == 2 && isEven == true)
+%             speciesName = 'Macaques';
+%         elseif (stim == 1 && isEven == true) || (stim == 2 && isEven == false)
+%             speciesName = 'Capuchins';
+%         end
+%         for Trial=1:nTrialssVEP
+%          Screen(w, 'FillRect', gray);  % makes the back buffer blank
+%          [standon] = Screen('Flip', w); % flips the back and front buffer
+%          %[buttons] = GetClicks(w); % Listens for mouseclicks
+%          switch speciesName %Change the event label based on species
+%           case 'Macaques'
+%            label = 'm11';
+%           case 'Capuchins' 
+%            label = 'c12';
+%          end
+%          soundfilerand = randi(2);
+%           switch soundfilerand
+%               case 1
+%                dissoundfile = 's4.wav';
+%               case 2
+%                dissoundfile = 's5.wav';    
+%           end
+%           InitializePsychSound;
+%           Channels = 1;
+%           MySoundFreq = 11025;
+% %           disp(dissoundfile)
+%           diswavdata = transpose(wavread(dissoundfile));
+%           MySoundHandle = PsychPortAudio('Open',[],[],0,MySoundFreq,Channels);
+%           PsychPortAudio('FillBuffer',MySoundHandle,diswavdata,0);
+%            %gives chance to use distractors by looking until mouse click
+%          [keyIsDown] = KbCheck(); %Listens for Keypresses
+%          [xpos,ypos,buttons] = GetMouse();
+%           while ~any(buttons) % Loops while no mouse buttons are pressed
+%               [keyIsDown] = KbCheck();
+%               [xpos,ypos,buttons] = GetMouse();
+%                if any(keyIsDown)
+%                     disrand = char(randi(2));
+%                     switch disrand
+%                         case 1
+%                             disimage = Screen('MakeTexture',w,disimagedata1);
+%                         case 2
+%                             disimage = Screen('MakeTexture',w,disimagedata2);    
+%                     end        
+% %                     disp(keyIsDown)
+%                     
+%                     %Screen('DrawTexture',w,mytex);
+%                     Screen('DrawTexture',w,disimage);
+%                     Screen('Flip',w);
+%                     PsychPortAudio('Start',MySoundHandle,1,0,1);
+%                      %PsychPortAudio('Start',MySoundHandle,1,0,1);
+%                      
+%                     WaitSecs(1.5);
+%         %                                     while 1 < 2 %Endless Loop
+%         %                                      KbEventFlush;   
+%         %                                     [xpos,ypos,buttons] = GetMouse(w);
+%         %                                         if any(keyIsDown) %Break the loop
+%         %                                             break
+%         %                                         end
+%         %                                         
+%         %                                     end
+%         %                                    
+%                    Screen(w, 'FillRect', gray);
+%                    Screen('Flip',w);
+%                    WaitSecs(.01);
+%                    KbEventFlush;
+%                end
+%    
+%           end
+%           KbEventFlush
+%           
+%           %if any(buttons) % Present images on mouseclick
+%            
+%            
+%            NetStation('Event',label, GetSecs, 0.001, 'trl#',Trial,'species',speciesName); % signals the beginning of a trial
+%            for image=1:nImagesssVEP
+%                destrect = destrect1.remove();
+%                if mod(image,5) ~= 0 % checks if remainder is divisible by 5; if not, present standard
+%                    
+%                    imageCount = imageCount + 1;
+%                    imdata = imread(char(presStims1.remove()));
+%                    mytex = Screen('MakeTexture', w, imdata);
+% 
+%                    for curAlpha = 0 : nAlpha
+%                       Screen('DrawTexture', w, mytex, [], destrect, [], [], curAlpha / nAlpha);
+%                       [standon] = Screen('Flip', w);
+%                       if curAlpha / nAlpha == 1
+%                         NetStation('Event','a100',standon,0.001,'trl#',Trial,'monk',speciesName,'alpha#',curAlpha / nAlpha);
+%                       elseif curAlpha / nAlpha == 0
+%                         NetStation('Event','a000',standon,0.001,'trl#',Trial,'monk',speciesName,'alpha#',curAlpha / nAlpha);  
+%                       end
+%                       javaMethod('parkNanos', 'java.util.concurrent.locks.LockSupport', floor(milli * nMillis));
+%                    end
+%                    for curAlpha = 1 : nAlpha - 1
+%                       if curAlpha / nAlpha == 1
+%                         NetStation('Event','a100',standon,0.001,'trl#',Trial,'monk',speciesName,'alpha#',curAlpha / nAlpha);
+%                       elseif curAlpha / nAlpha == 0
+%                         NetStation('Event','a000',standon,0.001,'trl#',Trial,'monk',speciesName,'alpha#',curAlpha / nAlpha);
+%                       end  
+%                       Screen('DrawTexture', w, mytex, [], destrect, [], [], 1 - (curAlpha / nAlpha));
+%                       [standon] = Screen('Flip', w);
+%                       javaMethod('parkNanos', 'java.util.concurrent.locks.LockSupport', floor(milli * nMillis));
+%                    end
+% 
+%                    oldTime = newSec;
+%                    newSec = GetSecs;
+%                    times.add(newSec - oldTime);
+% 
+% 
+%                elseif mod(image,5) == 0      % if remainder is divisible by 5, present oddball
+% 
+%                    imageCount = imageCount + 1;
+%                    
+%                    imdata = imread(char(presStims1.remove()));
+%                    %disp(char(presStims1.remove())) %Checking to make sure
+%                    %the luminance is changing
+%                    mytex = Screen('MakeTexture', w, imdata);
+% 
+%                    for curAlpha = 0 : nAlpha
+% 
+%                       Screen('DrawTexture', w, mytex, [], destrect, [], [], curAlpha / nAlpha);
+%                       [standon] = Screen('Flip', w);
+%                       if curAlpha / nAlpha == 1
+%                         NetStation('Event','a100',standon,0.001,'trl#',Trial,'monk',speciesName,'alpha#',curAlpha / nAlpha);
+%                       elseif curAlpha / nAlpha == 0
+%                         NetStation('Event','a000',standon,0.001,'trl#',Trial,'monk',speciesName,'alpha#',curAlpha / nAlpha);
+%                       end  
+%   
+%                       javaMethod('parkNanos', 'java.util.concurrent.locks.LockSupport', floor(milli * nMillis));
+%                    end
+%                    for curAlpha = 1 : nAlpha - 1
+% 
+%                       Screen('DrawTexture', w, mytex, [], destrect, [], [], 1 - (curAlpha / nAlpha));
+%                       [standon] = Screen('Flip', w);
+%                       if curAlpha / nAlpha == 1
+%                         NetStation('Event','a100',standon,0.001,'trl#',Trial,'monk',speciesName,'alpha#',curAlpha / nAlpha);
+%                       elseif curAlpha / nAlpha == 0
+%                         NetStation('Event','a000',standon,0.001,'trl#',Trial,'monk',speciesName,'alpha#',curAlpha / nAlpha);
+%                       end  
+%   
+%                       javaMethod('parkNanos', 'java.util.concurrent.locks.LockSupport', floor(milli * nMillis));
+%                    end
+% 
+%                    oldTime = newSec;
+%                    newSec = GetSecs;
+%                    times.add(newSec - oldTime);
+% 
+%                end    
+%             end
+%           %end
+%           Screen('Close'); % Supposed to clean up old textures
+%         end
+% 
+%        
+%        fprintf(fid,'%s\t%d\t%d\t%s\t%d\t%s\n',subject,counterbalance,Task,speciesName,Trial,char(standardshow));
+%     end
     
     while(~times.isEmpty())
-        disp(times.pop());
+%         disp(times.pop());
+        times.pop();
     end
     
    % display some data for now ... DELETE LATER
@@ -557,99 +558,101 @@ try
                    case 'Noise'
                        orglabel = 'n91';
                        soundlabel = strcat(orglabel,whowent);
-               end        
+               end
                newface = randi(4); 
                while newface == face
                    newface = randi(4); % checks to make sure standard is not repeated twice in a row
-               end 
-                       face = newface;
-                       mastercount = {count1,count2,count3,count4}; 
-                           if mastercount{face} >= 15
-                              newface = randi(4);
-                              face = newface;
-                           elseif mastercount{face} < 15
-                                if face == 1
-                                       count1 = count1 + 1;
-                                   elseif face == 2
-                                       count2 = count2 + 1;
-                                   elseif face == 3
-                                       count3 = count3 + 1;
-                                   elseif face == 4
-                                       count4 = count4 + 1;
-                                end 
-                           end
-                       faceshow = thisTask(face);
-                        if Species == 1
-                            if counterbalance == 1 || counterbalance == 2
-                                LabelPlay = LabelShuffle(face);
-                            elseif counterbalance == 3 || counterbalance == 4
-                                LabelPlay = NoiseFile;
-                            end
-                        end 
-                        if Species == 2
-                            if counterbalance == 1 || counterbalance == 2
-                                LabelPlay = NoiseFile;
-                            elseif counterbalance == 3 || counterbalance == 4
-                                LabelPlay = LabelShuffle(face);
-                            end
-                        end                        
+               end
+               disp('ccccccccc');
+               disp(strcat('newface: ', int2str(newface), '   face: ', int2str(face)));
+               face = newface;
+               mastercount = {count1,count2,count3,count4}; 
+               if mastercount{face} >= 15
+                  newface = randi(4); % The problem occurs here
+                  face = newface;
+               else
+                   if face == 1
+                           count1 = count1 + 1;
+                   elseif face == 2
+                       count2 = count2 + 1;
+                   elseif face == 3
+                       count3 = count3 + 1;
+                   elseif face == 4
+                       count4 = count4 + 1;
+                   end 
+               end
+               faceshow = thisTask(face);
+                if Species == 1
+                    if counterbalance == 1 || counterbalance == 2
+                        LabelPlay = LabelShuffle(face);
+                    elseif counterbalance == 3 || counterbalance == 4
+                        LabelPlay = NoiseFile;
+                    end
+                end 
+                if Species == 2
+                    if counterbalance == 1 || counterbalance == 2
+                        LabelPlay = NoiseFile;
+                    elseif counterbalance == 3 || counterbalance == 4
+                        LabelPlay = LabelShuffle(face);
+                    end
+                end                        
 
-                       % disp(faceshow); % Use to check output of filenames
+               % disp(faceshow); % Use to check output of filenames
 
-                       curFile = '';
-                       curStr = char(faceshow(1));
-                       if length(char(faceshow(1))) == 5
-                           curFile = curStr(1);
-                       end
-                       if length(char(faceshow(1))) == 6
-                           curFile = curStr(1:2);
-                       end
-                       soundfilerand = randi(2);
-                       switch soundfilerand
-                           case 1
-                            dissoundfile = 's4.wav';
-                           case 2
-                            dissoundfile = 's5.wav';    
-                       end        
-                       MySoundFreq = 11025;
-                       disp(dissoundfile)
-                       diswavdata = transpose(wavread(dissoundfile));
-                       MySoundHandle = PsychPortAudio('Open',[],[],0,MySoundFreq,Channels);
-                       PsychPortAudio('FillBuffer',MySoundHandle,diswavdata,0);
-                       filename = strjoin({'Images',speciesName,strcat(curFile, '.png')}, '/');
+               curFile = '';
+               curStr = char(faceshow(1));
+               if length(char(faceshow(1))) == 5
+                   curFile = curStr(1);
+               end
+               if length(char(faceshow(1))) == 6
+                   curFile = curStr(1:2);
+               end
+               soundfilerand = randi(2);
+               switch soundfilerand
+                   case 1
+                    dissoundfile = 's4.wav';
+                   case 2
+                    dissoundfile = 's5.wav';    
+               end        
+               MySoundFreq = 11025;
+%                disp(dissoundfile)
+               diswavdata = transpose(wavread(dissoundfile));
+               MySoundHandle = PsychPortAudio('Open',[],[],0,MySoundFreq,Channels);
+               PsychPortAudio('FillBuffer',MySoundHandle,diswavdata,0);
+               filename = strjoin({'Images',speciesName,strcat(curFile, '.png')}, '/');
 
-                       % disp(filename);
-                       imdata = imread(char(filename));
-                       mytex = Screen('MakeTexture',w,imdata);
-                       
-                       [X,Y] = RectCenter(wRect); % Centers fixation cross
-                       FixCross = [X-1,Y-20,X+1,Y+20;X-20,Y-1,X+20,Y+1]; % Fixation cross size
-                       Screen('FillRect', w, [0,0,0], FixCross');
-                       Screen('FillRect', w, [0,0,0], [100,100,200,300]);
-                       Screen('Flip',w);
-                       s3 = GetSecs;
-                       NetStation('Event','fix+',s3,0.001,'trl#',Trial);
-                       [xpos,ypos,buttons] = GetMouse(w);
-                       while any(buttons) == 0 %gives chance to use distractors by looking until mouse click
+               % disp(filename);
+               imdata = imread(char(filename));
+               mytex = Screen('MakeTexture',w,imdata);
 
-                           [keyIsDown] = KbCheck(); %Listens for Keypresses
-                           [xpos,ypos,buttons] = GetMouse(w);
-                           if any(keyIsDown)
-                                    disrand = char(randi(2));
-                                    switch disrand
-                                        case 1
-                                        disimage = Screen('MakeTexture',w,disimagedata1);
-                                        case 2
-                                        disimage = Screen('MakeTexture',w,disimagedata2);    
-                                    end        
-                                    disp(keyIsDown)
-                                    KbEventFlush;
-                                    %Screen('DrawTexture',w,mytex);
-                                    Screen('DrawTexture',w,disimage);
-                                    Screen('Flip',w)
-                                    PsychPortAudio('Start',MySoundHandle,1,0,1);
-                                    [xpos,ypos,buttons] = GetMouse(w);
-                                    WaitSecs(1.5)
+               [X,Y] = RectCenter(wRect); % Centers fixation cross
+               FixCross = [X-1,Y-20,X+1,Y+20;X-20,Y-1,X+20,Y+1]; % Fixation cross size
+               Screen('FillRect', w, [0,0,0], FixCross');
+               Screen('FillRect', w, [0,0,0], [100,100,200,300]);
+               Screen('Flip',w);
+               s3 = GetSecs;
+               NetStation('Event','fix+',s3,0.001,'trl#',Trial);
+               [xpos,ypos,buttons] = GetMouse(w);
+               while any(buttons) == 0 %gives chance to use distractors by looking until mouse click
+
+                   [keyIsDown] = KbCheck(); %Listens for Keypresses
+                   [xpos,ypos,buttons] = GetMouse(w);
+                   if any(keyIsDown)
+                            disrand = char(randi(2));
+                            switch disrand
+                                case 1
+                                disimage = Screen('MakeTexture',w,disimagedata1);
+                                case 2
+                                disimage = Screen('MakeTexture',w,disimagedata2);    
+                            end        
+%                             disp(keyIsDown)
+                            KbEventFlush;
+                            %Screen('DrawTexture',w,mytex);
+                            Screen('DrawTexture',w,disimage);
+                            Screen('Flip',w);
+                            PsychPortAudio('Start',MySoundHandle,1,0,1);
+                            [xpos,ypos,buttons] = GetMouse(w);
+                            WaitSecs(1.5);
 %                                     while 1 < 2 %Endless Loop
 %                                      KbEventFlush;   
 %                                     [xpos,ypos,buttons] = GetMouse(w);
@@ -659,39 +662,39 @@ try
 %                                         
 %                                     end
 %                                    
-                           Screen('FillRect', w, [0,0,0], FixCross');
-                           Screen('Flip',w);
-                           WaitSecs(.01)
-                           end
-                       end    
-                        KbEventFlush 
-                      
-                       [xpos,ypos,buttons] = GetMouse(w); % Waits for mouseclicks. same as KbWait
-                       
-                       MySoundFreq = 96000;
-                       MySound = strjoin({'Audio',char(LabelPlay(1))},'/');
-                       MySoundData = transpose(wavread(MySound));
-                       FinishTime = length(MySoundData)/MySoundFreq;
-                       MySoundHandle = PsychPortAudio('Open',[],[],0,MySoundFreq,Channels);
-                       PsychPortAudio('FillBuffer',MySoundHandle,MySoundData,0);
-                         
-                          if any(buttons) % Present image on mouseclick
-                           Screen('DrawTexture',w,mytex);
-                           Screen('FillRect',w,[255,255,255],[100,100,200,300]);
-                           [stimOn] = Screen('Flip',w);
-                           NetStation('Event',soundlabel,stimOn,0.001,'trl#',Trial,'monk',monkeyspecies,'name',face,'labl',labeltype);
-                           startTime = PsychPortAudio('Start',MySoundHandle,1,0,1); % Jitter onset time between 10-300ms post-face onset
-                           WaitSecs(FinishTime);
-                           Screen('Flip',w);  
-                           s2 = GetSecs;
-                           NetStation('Event','stm-',s2,0.001);
-                           countfortag = countfortag +1;
-                           disp(countfortag)
-                          end
-                       randi([800,1000]); % Random inter-trial interval   
-                       Screen('Close');
-                       PsychPortAudio('Close',MySoundHandle);
-                       fprintf(fid,'%s\t%d\t%d\t%d\t%s\t%s\t%s\n',subject,counterbalance,Task,Trial,char(faceshow),monkeyspecies,labeltype);
+                   Screen('FillRect', w, [0,0,0], FixCross');
+                   Screen('Flip',w);
+                   WaitSecs(.01);
+                   end
+               end    
+                KbEventFlush;
+
+               [xpos,ypos,buttons] = GetMouse(w); % Waits for mouseclicks. same as KbWait
+
+               MySoundFreq = 96000;
+               MySound = strjoin({'Audio',char(LabelPlay(1))},'/');
+               MySoundData = transpose(wavread(MySound));
+               FinishTime = length(MySoundData)/MySoundFreq;
+               MySoundHandle = PsychPortAudio('Open',[],[],0,MySoundFreq,Channels);
+               PsychPortAudio('FillBuffer',MySoundHandle,MySoundData,0);
+
+                  if any(buttons) % Present image on mouseclick
+                   Screen('DrawTexture',w,mytex);
+                   Screen('FillRect',w,[255,255,255],[100,100,200,300]);
+                   [stimOn] = Screen('Flip',w);
+                   NetStation('Event',soundlabel,stimOn,0.001,'trl#',Trial,'monk',monkeyspecies,'name',face,'labl',labeltype);
+                   startTime = PsychPortAudio('Start',MySoundHandle,1,0,1); % Jitter onset time between 10-300ms post-face onset
+                   WaitSecs(FinishTime);
+                   Screen('Flip',w);  
+                   s2 = GetSecs;
+                   NetStation('Event','stm-',s2,0.001);
+                   countfortag = countfortag +1;
+%                    disp(countfortag)
+                  end
+               randi([800,1000]); % Random inter-trial interval   
+               Screen('Close');
+               PsychPortAudio('Close',MySoundHandle);
+               fprintf(fid,'%s\t%d\t%d\t%d\t%s\t%s\t%s\n',subject,counterbalance,Task,Trial,char(faceshow),monkeyspecies,labeltype);
            end                 
     end
     
@@ -720,7 +723,7 @@ try
           InitializePsychSound;
           Channels = 1;
           MySoundFreq = 11025;
-          disp(dissoundfile)
+%           disp(dissoundfile)
           diswavdata = transpose(wavread(dissoundfile));
           MySoundHandle = PsychPortAudio('Open',[],[],0,MySoundFreq,Channels);
           PsychPortAudio('FillBuffer',MySoundHandle,diswavdata,0);
@@ -739,7 +742,7 @@ try
                             case 2
                             disimage = Screen('MakeTexture',w,disimagedata2);    
                         end        
-                        disp(keyIsDown)
+%                         disp(keyIsDown)
                         KbEventFlush;
                         %Screen('DrawTexture',w,mytex);
                         Screen('DrawTexture',w,disimage);
@@ -835,7 +838,8 @@ try
     end
     
     while(~times.isEmpty())
-        disp(times.pop());
+%         disp(times.pop());
+            times.pop();
     end
                
     NetStation('Synchronize');
