@@ -4,3 +4,5 @@ Lists
 Subinfo.txt
 Data
 Bins
+*.mat
+*.asv
