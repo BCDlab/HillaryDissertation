@@ -291,8 +291,29 @@ try
                            else
                                showstring = s(1:2);
                            end
+                           luminancevalue = randi(9); %Make the image a random luminance
+                           switch luminancevalue 
+                                case 1
+                                    lumstring = '+40';
+                                case 2
+                                    lumstring = '+30';
+                                case 3
+                                    lumstring = '+20';
+                                case 4
+                                    lumstring = '+10';
+                                case 5
+                                    lumstring = '+0';
+                                case 6
+                                    lumstring = '-10';
+                                case 7
+                                    lumstring = '-20';
+                                case 8
+                                    lumstring = '-30';
+                                case 9
+                                    lumstring = '-40';
+                           end 
 
-                           filename = strjoin({'Images', speciesName, strcat(showstring, '.png')}, '/');
+                           filename = strjoin({'Images', speciesName, strcat(showstring, lumstring, '.png')}, '/');
     
                            presStims2.add(filename);
 
@@ -311,8 +332,29 @@ try
                            else
                                showstring = s(1:2);
                            end
+                           luminancevalue = randi(9); %Make the image a random luminance
+                           switch luminancevalue 
+                                case 1
+                                    lumstring = '+40';
+                                case 2
+                                    lumstring = '+30';
+                                case 3
+                                    lumstring = '+20';
+                                case 4
+                                    lumstring = '+10';
+                                case 5
+                                    lumstring = '+0';
+                                case 6
+                                    lumstring = '-10';
+                                case 7
+                                    lumstring = '-20';
+                                case 8
+                                    lumstring = '-30';
+                                case 9
+                                    lumstring = '-40';
+                           end 
                            
-                           filename = strjoin({'Images', speciesName, strcat(showstring, '.png')}, '/');
+                           filename = strjoin({'Images', speciesName, strcat(showstring, lumstring, '.png')}, '/');
                            
                            presStims2.add(filename);
                            
